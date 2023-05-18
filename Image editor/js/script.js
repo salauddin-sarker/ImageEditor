@@ -5,6 +5,7 @@ filterName =document.querySelector(".filter_info .name"),
 filterValue =document.querySelector(".filter_info .value"),
 filterSlider =document.querySelector(".slider input"),
 previewImg =document.querySelector(".preview_img img"),
+resetFilterBtn =document.querySelector(".reset_filter "),
 chooseImgBtn =document.querySelector(".choose_img");
 
 let brightness = 100, saturation = 100, inversion = 0, grayscale = 0;
@@ -12,7 +13,7 @@ let rotate = 0, flipHorizontal = 1, flipVartical = 1;
 
 const applyFilters = () => {
     previewImg.style.transform = `rotate(${rotate}deg)scale(${flipHorizontal},${flipVartical})`;
-    previewImg.style.filter = `brightness(${brightness}%)saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+    previewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%)  grayscale(${grayscale}%)`;
 }
 
 const loadImage = () => {
@@ -80,6 +81,14 @@ rotateOptions.forEach(option =>{
     });
 })
 
+const resetFilter = () => {
+    // reseting all variable value to its defult value
+    brightness = 100; saturation = 100; inversion = 0; grayscale = 0;
+    rotate = 0; flipHorizontal = 1; flipVartical = 1;
+    applyFilters();
+}
+
 fileInput.addEventListener("change", loadImage);
 filterSlider.addEventListener("input",updatefilter);
+resetFilterBtn.addEventListener("click",resetFilter);
 chooseImgBtn.addEventListener("click", () => fileInput.click());
