@@ -1,12 +1,13 @@
-const fileInput =document.querySelector(".file_input"),
-filterOptions =document.querySelectorAll(".filter button"),
-rotateOptions =document.querySelectorAll(".rotate button"),
-filterName =document.querySelector(".filter_info .name"),
-filterValue =document.querySelector(".filter_info .value"),
-filterSlider =document.querySelector(".slider input"),
-previewImg =document.querySelector(".preview_img img"),
-resetFilterBtn =document.querySelector(".reset_filter "),
-chooseImgBtn =document.querySelector(".choose_img");
+const fileInput = document.querySelector(".file_input"),
+filterOptions = document.querySelectorAll(".filter button"),
+rotateOptions = document.querySelectorAll(".rotate button"),
+filterName = document.querySelector(".filter_info .name"),
+filterValue = document.querySelector(".filter_info .value"),
+filterSlider = document.querySelector(".slider input"),
+previewImg = document.querySelector(".preview_img img"),
+resetFilterBtn = document.querySelector(".reset_filter "),
+chooseImgBtn = document.querySelector(".choose_img"),
+saveImgBtn = document.querySelector(".save_img");
 
 let brightness = 100, saturation = 100, inversion = 0, grayscale = 0;
 let rotate = 0, flipHorizontal = 1, flipVartical = 1;
@@ -21,6 +22,7 @@ const loadImage = () => {
     if(!file) return; // return if user hasn't  selected file
     previewImg.src = URL.createObjectURL(file); // passing file url as preview img src
     previewImg.addEventListener("load", () =>{
+        resetFilterBtn.click(); // clicking reset btn, so the filter value reset if the user select new img
         document.querySelector(".container").classList.remove("disable");
     });
 }
@@ -85,10 +87,31 @@ const resetFilter = () => {
     // reseting all variable value to its defult value
     brightness = 100; saturation = 100; inversion = 0; grayscale = 0;
     rotate = 0; flipHorizontal = 1; flipVartical = 1;
+    filterOptions[0].click(); // clicking brightness btn, so the brightness selected by default
     applyFilters();
 }
+const saveImage = () => {
+    const canvas = document.createElement("canvas"); // creating canvas element 
+    const ctx = canvas.getContext("2d"); // canvas.getContex return a drawing context on the canvas
+    canvas.width = previewImg.naturalWidth; // setting canvas width to actual image width 
+    canvas.height = previewImg.naturalHeight; // setting canvas width to actual image height
 
+    // applying user selected filters to canvas filter
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%)  grayscale(${grayscale}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2); // translate canvas from center
+    if(rotate !== 0) { // if rotate value isn't 0, rotate the canvas
+        ctx.rotate(rotate * Math.PI / 180)
+    }
+    ctx.scale(flipHorizontal, flipVartical); // flip canvas, horizontally / vertically
+    ctx.drawImage(previewImg, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+    
+    const link = document.createElement("a"); // creating <a> element
+    link.download = "image.jpg"; // passing <a> tag download value to "image.jpg"
+    link.href = canvas.toDataURL(); // passing <a> tag href value to canvas data url
+    link.click(); // clicking <a> tag so the image download
+}
 fileInput.addEventListener("change", loadImage);
 filterSlider.addEventListener("input",updatefilter);
 resetFilterBtn.addEventListener("click",resetFilter);
 chooseImgBtn.addEventListener("click", () => fileInput.click());
+saveImgBtn.addEventListener("click",saveImage);
